@@ -1,11 +1,15 @@
 package create_courier;
 
+import com.google.gson.Gson;
 import helper.TestHelper;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import pojo.*;
@@ -14,12 +18,13 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(Parameterized.class)
-public class CreateCourierFieldsTest {
+public class CreateCourierFieldsTest extends TestHelper{
     private final String login;
     private final String password;
     private final String firstName;
     private final boolean emptyIsNull;
     private CreateCourierRequest request;
+    private int resultCode;
 
     public CreateCourierFieldsTest(String testName, String login, String password, String firstName, boolean emptyIsNull) {
         this.login = TestHelper.prepareTestValue(login);
@@ -48,8 +53,8 @@ public class CreateCourierFieldsTest {
             this.request = new CreateCourierRequest(login, password, firstName);
         }
 //        Не удалила, чтобы было проще проверить итоговый json
-//        Gson gson = new Gson();
-//        System.out.println(gson.toJson(request));
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(request));
     }
 
     @Parameterized.Parameters(name = "{0}")
@@ -93,7 +98,19 @@ public class CreateCourierFieldsTest {
                 .body(request)
                 .post("/api/v1/courier");
 
+        resultCode = response.statusCode();
         response.then().statusCode(400);
         response.then().assertThat().body("message", notNullValue());
     }
+
+    @Rule
+    public TestWatcher watch = new TestWatcher() {
+        @Override
+        protected void failed(Throwable e, Description description) {
+            // Если тест упал, есть вероятность, что курьер был создан и можно попробовать его удалить
+            if (resultCode == 201) {
+                deleteCourier(login, password);
+            }
+        }
+    };
 }

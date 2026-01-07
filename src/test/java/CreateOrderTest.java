@@ -41,13 +41,13 @@ public class CreateOrderTest {
                     "with empty colors", new ArrayList<>(),
                 },
                 {
-                    "gray color", new ArrayList<>(Arrays.asList(CreateOrderRequest.Color.GRAY)),
+                    "gray color", new ArrayList<>(Arrays.asList(CreateOrderRequest.Color.GREY)),
                 },
                 {
                     "black color", new ArrayList<>(Arrays.asList(CreateOrderRequest.Color.BLACK)),
                 },
                 {
-                    "both colors", new ArrayList<>(Arrays.asList(CreateOrderRequest.Color.GRAY, CreateOrderRequest.Color.BLACK)),
+                    "both colors", new ArrayList<>(Arrays.asList(CreateOrderRequest.Color.GREY, CreateOrderRequest.Color.BLACK)),
                 },
                 {
                     "same color twice", new ArrayList<>(Arrays.asList(CreateOrderRequest.Color.BLACK, CreateOrderRequest.Color.BLACK)),

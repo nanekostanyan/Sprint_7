@@ -5,7 +5,7 @@ import java.util.List;
 public class CreateOrderRequest {
     public enum Color {
         BLACK,
-        GRAY
+        GREY
     }
 
     private String firstName;
