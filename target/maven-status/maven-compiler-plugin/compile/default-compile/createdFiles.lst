@@ -1,5 +1,5 @@
-pojo\CourierLoginRequest.class
 pojo\CreateCourierRequest.class
-pojo\CourierLoginResponse.class
 pojo\CreateOrderRequest.class
 pojo\CreateOrderRequest$Color.class
+pojo\CourierLoginRequest.class
+pojo\CourierLoginResponse.class
