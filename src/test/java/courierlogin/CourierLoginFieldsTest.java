@@ -1,24 +1,20 @@
-package courier_login;
+package courierlogin;
 
-import com.google.gson.Gson;
-import helper.TestHelper;
+import helper.BaseTest;
+import helper.CourierApi;
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import pojo.CourierLoginRequest;
-
 import java.util.Random;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
-public class CourierLoginFieldsTest extends TestHelper {
+public class CourierLoginFieldsTest extends CourierApi {
     private final String login;
     private final boolean spoilLogin;
     private final String password;
@@ -26,9 +22,9 @@ public class CourierLoginFieldsTest extends TestHelper {
     private final String firstName;
 
     public CourierLoginFieldsTest(String testName, boolean spoilLogin, boolean spoilPassword) {
-        this.login = TestHelper.prepareTestValue("login");
+        this.login = BaseTest.prepareTestValue("login");
         this.spoilLogin = spoilLogin;
-        this.password = TestHelper.prepareTestValue("password");
+        this.password = BaseTest.prepareTestValue("password");
         this.spoilPassword = spoilPassword;
         this.firstName = "Bella"; // Не влияет на тест, думаю что требованием отсутствия хардкода можно пренебречь
     }
@@ -36,15 +32,13 @@ public class CourierLoginFieldsTest extends TestHelper {
     @Before
     @Step("setUp")
     public final void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru/";
-
-        createCourier(login, password, firstName);
+        createCourierWCheck(login, password, firstName);
     }
 
     @After
     @Step("tearDown")
     public final void tearDown() {
-        deleteCourier(login, password);
+        deleteCourierWCheck(login, password);
     }
 
     @Parameterized.Parameters(name = "{0}")
@@ -66,21 +60,12 @@ public class CourierLoginFieldsTest extends TestHelper {
     @Test
     @Step("Запускаем тест cantLoginCourierWithEmptyFields")
     public void cantLoginCourierWithEmptyFields() {
-        CourierLoginRequest request = new CourierLoginRequest(
+        loginCourier(
                 spoilLogin ? "" : login,
                 spoilPassword ? "" : password
         );
-
-        Gson gson = new Gson();
-        System.out.printf("login: `%s`; password: `%s`; json: `%s`", login, password, gson.toJson(request));
-
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(request)
-                .post("/api/v1/courier/login");
-
-        response.then().statusCode(400);
-        response.then().assertThat().body("message", notNullValue());
+        checkResponseSC(SC_BAD_REQUEST);
+        responseHasMessage();
     }
 
     @Test
@@ -94,38 +79,23 @@ public class CourierLoginFieldsTest extends TestHelper {
             request.setPassword(password);
         }
 
-        Gson gson = new Gson();
-        System.out.printf("login: `%s`; password: `%s`; json: `%s`", login, password, gson.toJson(request));
-
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(request)
-                .post("/api/v1/courier/login");
-
-        response.then().statusCode(400);
-        response.then().assertThat().body("message", notNullValue());
+        loginCourierWRequest(request);
+        checkResponseSC(SC_BAD_REQUEST);
+        responseHasMessage();
     }
 
     @Test
     @Step("Запускаем тест cantLoginCourierWithSpoiledFields")
     public void cantLoginCourierWithSpoiledFields() {
-        CourierLoginRequest request = new CourierLoginRequest(
+        loginCourier(
                 spoilLogin ? spoilString(login) : login,
                 spoilPassword ? spoilString(password) : password
         );
-
-        Gson gson = new Gson();
-        System.out.printf("login: `%s`; password: `%s`; json: `%s`", login, password, gson.toJson(request));
-
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(request)
-                .post("/api/v1/courier/login");
-
-        response.then().statusCode(404);
-        response.then().assertThat().body("message", notNullValue());
+        checkResponseSC(SC_NOT_FOUND);
+        responseHasMessage();
     }
 
+    @Step("Портим входную строку")
     private String spoilString(String str) {
         // Просто удалю один случайный символ
         Random rand = new Random();
