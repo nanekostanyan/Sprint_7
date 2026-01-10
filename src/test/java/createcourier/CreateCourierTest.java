@@ -2,40 +2,42 @@ package createcourier;
 
 import helper.BaseTest;
 import helper.CourierApi;
+import helper.PrepareTestData;
 import io.qameta.allure.Step;
 import org.junit.After;
 import org.junit.Test;
 
 import static org.apache.http.HttpStatus.*;
 
-public class CreateCourierTest extends CourierApi {
-    private final String login = BaseTest.prepareTestValue("user");
-    private final String password = BaseTest.prepareTestValue("password");
-    private final String firstName = BaseTest.prepareTestValue("firstName");
+public class CreateCourierTest extends BaseTest {
+    private final CourierApi courierApi = new CourierApi();
+    private final String login = PrepareTestData.prepareTestValue("user");
+    private final String password = PrepareTestData.prepareTestValue("password");
+    private final String firstName = PrepareTestData.prepareTestValue("firstName");
 
     @After
     @Step("tearDown")
     public final void tearDown() {
-        deleteCourier(login, password);
+        courierApi.deleteCourier(login, password);
     }
 
     @Test
     @Step("Запускаем тест createCourierSuccessfully")
     public void createCourierSuccessfully() {
-        createCourier(login, password, firstName);
-        checkResponseSC(SC_CREATED);
-        checkResponseFieldOk(true);
+        courierApi.createCourier(login, password, firstName);
+        courierApi.checkResponseSC(SC_CREATED);
+        courierApi.checkResponseFieldOk(true);
     }
 
     @Test
     @Step("Запускаем тест cantCreateDuplicateCourier")
     public void cantCreateDuplicateCourier() {
-        createCourier(login, password, firstName);
-        checkResponseSC(SC_CREATED);
-        checkResponseFieldOk(true);
+        courierApi.createCourier(login, password, firstName);
+        courierApi.checkResponseSC(SC_CREATED);
+        courierApi.checkResponseFieldOk(true);
 
-        createCourier(login, password, firstName);
-        checkResponseSC(SC_CONFLICT);
-        responseHasMessage();
+        courierApi.createCourier(login, password, firstName);
+        courierApi.checkResponseSC(SC_CONFLICT);
+        courierApi.responseHasMessage();
     }
 }

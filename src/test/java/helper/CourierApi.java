@@ -12,7 +12,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
-public class CourierApi extends BaseTest {
+public class CourierApi {
     private Response response;
 
     // Разделила создание курьера на два метода.

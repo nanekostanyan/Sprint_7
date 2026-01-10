@@ -11,7 +11,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 
-public class OrderApi extends BaseTest {
+public class OrderApi {
     private Response response;
 
     @Step("callOrdersList")
@@ -36,14 +36,14 @@ public class OrderApi extends BaseTest {
         final int bound = 1000;
 
         CreateOrderRequest request = new CreateOrderRequest();
-        request.setFirstName(BaseTest.prepareTestValue("Naruto"));
-        request.setLastName(BaseTest.prepareTestValue("Uchiha"));
-        request.setAddress(BaseTest.prepareTestValue("Konoha, 142 apt."));
+        request.setFirstName(PrepareTestData.prepareTestValue("Naruto"));
+        request.setLastName(PrepareTestData.prepareTestValue("Uchiha"));
+        request.setAddress(PrepareTestData.prepareTestValue("Konoha, 142 apt."));
         request.setMetroStation(rand.nextInt(bound));
-        request.setPhone(BaseTest.createPhone());
+        request.setPhone(PrepareTestData.createPhone());
         request.setRentTime(rand.nextInt(bound));
-        request.setDeliveryDate(BaseTest.createDate());
-        request.setComment(BaseTest.prepareTestValue("Saske, come back to Konoha"));
+        request.setDeliveryDate(PrepareTestData.createDate());
+        request.setComment(PrepareTestData.prepareTestValue("Saske, come back to Konoha"));
         if (colors != null) {
             request.setColor(colors);
         }

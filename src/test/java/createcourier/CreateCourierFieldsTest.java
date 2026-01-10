@@ -2,6 +2,7 @@ package createcourier;
 
 import helper.BaseTest;
 import helper.CourierApi;
+import helper.PrepareTestData;
 import io.qameta.allure.Step;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,7 +16,8 @@ import pojo.*;
 import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
-public class CreateCourierFieldsTest extends CourierApi {
+public class CreateCourierFieldsTest extends BaseTest {
+    private final CourierApi courierApi = new CourierApi();
     private final String login;
     private final String password;
     private final String firstName;
@@ -23,9 +25,9 @@ public class CreateCourierFieldsTest extends CourierApi {
     private CreateCourierRequest request;
 
     public CreateCourierFieldsTest(String testName, String login, String password, String firstName, boolean emptyIsNull) {
-        this.login = BaseTest.prepareTestValue(login);
-        this.password = BaseTest.prepareTestValue(password);
-        this.firstName = BaseTest.prepareTestValue(firstName);
+        this.login = PrepareTestData.prepareTestValue(login);
+        this.password = PrepareTestData.prepareTestValue(password);
+        this.firstName = PrepareTestData.prepareTestValue(firstName);
         this.emptyIsNull = emptyIsNull;
     }
 
@@ -82,9 +84,9 @@ public class CreateCourierFieldsTest extends CourierApi {
     @Test
     @Step("Запускаем тест emptyFieldReturnsError")
     public void emptyFieldReturnsError() {
-        createCourierWRequest(login, password, firstName, request);
-        checkResponseSC(SC_BAD_REQUEST);
-        responseHasMessage();
+        courierApi.createCourierWRequest(login, password, firstName, request);
+        courierApi.checkResponseSC(SC_BAD_REQUEST);
+        courierApi.responseHasMessage();
     }
 
     @Rule
@@ -93,8 +95,8 @@ public class CreateCourierFieldsTest extends CourierApi {
         @Step("Удаляем курьера, который мог создаться в провалившемся тесте")
         protected void failed(Throwable e, Description description) {
             // Если тест упал, есть вероятность, что курьер был создан и можно попробовать его удалить
-            if (getResponseSC() == SC_CREATED) {
-                deleteCourierWCheck(login, password);
+            if (courierApi.getResponseSC() == SC_CREATED) {
+                courierApi.deleteCourierWCheck(login, password);
             }
         }
     };

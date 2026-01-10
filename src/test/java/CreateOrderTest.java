@@ -1,3 +1,4 @@
+import helper.BaseTest;
 import helper.OrderApi;
 import io.qameta.allure.Step;
 import org.junit.Test;
@@ -12,7 +13,8 @@ import java.util.List;
 import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
-public class CreateOrderTest extends OrderApi {
+public class CreateOrderTest extends BaseTest {
+    private final OrderApi orderApi = new OrderApi();
     private final List<CreateOrderRequest.Color> colors;
 
     public CreateOrderTest(String testName, List<CreateOrderRequest.Color> colors) {
@@ -47,8 +49,8 @@ public class CreateOrderTest extends OrderApi {
     @Test
     @Step("Запускаем тест createOrder")
     public void createOrder() {
-        createOrderWColors(colors);
-        checkResponseSC(SC_CREATED);
-        responseHasTrack();
+        orderApi.createOrderWColors(colors);
+        orderApi.checkResponseSC(SC_CREATED);
+        orderApi.responseHasTrack();
     }
 }

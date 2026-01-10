@@ -2,6 +2,7 @@ package courierlogin;
 
 import helper.BaseTest;
 import helper.CourierApi;
+import helper.PrepareTestData;
 import io.qameta.allure.Step;
 import org.junit.After;
 import org.junit.Before;
@@ -14,7 +15,8 @@ import java.util.Random;
 import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
-public class CourierLoginFieldsTest extends CourierApi {
+public class CourierLoginFieldsTest extends BaseTest {
+    private final CourierApi courierApi = new CourierApi();
     private final String login;
     private final boolean spoilLogin;
     private final String password;
@@ -22,9 +24,9 @@ public class CourierLoginFieldsTest extends CourierApi {
     private final String firstName;
 
     public CourierLoginFieldsTest(String testName, boolean spoilLogin, boolean spoilPassword) {
-        this.login = BaseTest.prepareTestValue("login");
+        this.login = PrepareTestData.prepareTestValue("login");
         this.spoilLogin = spoilLogin;
-        this.password = BaseTest.prepareTestValue("password");
+        this.password = PrepareTestData.prepareTestValue("password");
         this.spoilPassword = spoilPassword;
         this.firstName = "Bella"; // Не влияет на тест, думаю что требованием отсутствия хардкода можно пренебречь
     }
@@ -32,13 +34,13 @@ public class CourierLoginFieldsTest extends CourierApi {
     @Before
     @Step("setUp")
     public final void setUp() {
-        createCourierWCheck(login, password, firstName);
+        courierApi.createCourierWCheck(login, password, firstName);
     }
 
     @After
     @Step("tearDown")
     public final void tearDown() {
-        deleteCourierWCheck(login, password);
+        courierApi.deleteCourierWCheck(login, password);
     }
 
     @Parameterized.Parameters(name = "{0}")
@@ -60,12 +62,12 @@ public class CourierLoginFieldsTest extends CourierApi {
     @Test
     @Step("Запускаем тест cantLoginCourierWithEmptyFields")
     public void cantLoginCourierWithEmptyFields() {
-        loginCourier(
+        courierApi.loginCourier(
                 spoilLogin ? "" : login,
                 spoilPassword ? "" : password
         );
-        checkResponseSC(SC_BAD_REQUEST);
-        responseHasMessage();
+        courierApi.checkResponseSC(SC_BAD_REQUEST);
+        courierApi.responseHasMessage();
     }
 
     @Test
@@ -79,20 +81,20 @@ public class CourierLoginFieldsTest extends CourierApi {
             request.setPassword(password);
         }
 
-        loginCourierWRequest(request);
-        checkResponseSC(SC_BAD_REQUEST);
-        responseHasMessage();
+        courierApi.loginCourierWRequest(request);
+        courierApi.checkResponseSC(SC_BAD_REQUEST);
+        courierApi.responseHasMessage();
     }
 
     @Test
     @Step("Запускаем тест cantLoginCourierWithSpoiledFields")
     public void cantLoginCourierWithSpoiledFields() {
-        loginCourier(
+        courierApi.loginCourier(
                 spoilLogin ? spoilString(login) : login,
                 spoilPassword ? spoilString(password) : password
         );
-        checkResponseSC(SC_NOT_FOUND);
-        responseHasMessage();
+        courierApi.checkResponseSC(SC_NOT_FOUND);
+        courierApi.responseHasMessage();
     }
 
     @Step("Портим входную строку")
