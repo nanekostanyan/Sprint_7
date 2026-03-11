@@ -22,3 +22,17 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Maven
+/target/**
+!/target/allure-results/
+!/target/allure-results/**
+
+# Allure
+.allure/
+allure-results/
+allure-report/
+
+# IDE
+.idea/
+*.iml
